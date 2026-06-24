@@ -1,0 +1,989 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<link href="https://fonts.googleapis.com/css2?family=Kodchasan:wght@400;500;600;700&display=swap" rel="stylesheet">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Mocha Cafe — Let's Make Cake!</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+<style>
+  #playerName{
+  position:absolute;
+  bottom:380px;
+  left:50%;
+  transform:translateX(-50%);
+  padding:18px 16px;
+  border-radius:12px;
+  border:2px solid #f9a8d4;
+  font-size:18px;
+  text-align:center;
+  outline:none;
+}
+#cakeGif{
+  position:absolute;
+  left:50%;
+  top:550px;
+
+  transform:translateX(-50%);
+
+  width:300px;
+  image-rendering:pixelated;
+  pointer-events:none;
+}
+#cake-preview-area,
+#cake-preview-area2,
+#cake-preview-area3{
+  width:460px;
+  height:460px;
+  display:flex
+}
+
+*{margin:0;padding:0;box-sizing:border-box}
+html,body{
+  width:100vw;
+  height:100vh;
+  overflow:hidden;
+  font-family:'Kodchasan',sans-serif;
+  background:#fde8f0;
+  image-rendering:pixelated;
+  
+}
+#game{
+  width:1280px;
+  height:800px;
+  position:absolute;
+  left:50%;
+  top:50%;
+  transform-origin:center center;
+  pointer-events:auto;
+}
+
+
+/* SCREENS */
+.screen{position:absolute;inset:0;display:none;flex-direction:column;align-items:center;justify-content:center}
+.screen.active{display:flex}
+
+/* NAV BUTTONS */
+.btn-next{position:absolute;bottom:150px;right:36px;background:#f472b6;color:#fff;border:none;border-radius:12px;padding:14px 32px;font-size:20px;font-weight:700;cursor:pointer;letter-spacing:1px;box-shadow:0 4px 0 #be185d}
+.btn-next:active{transform:translateY(2px);box-shadow:0 2px 0 #be185d}
+.btn-back{position:absolute;bottom:150px;left:20
+px;background:#c4b5fd;color:#4c1d95;border:none;border-radius:12px;padding:14px 32px;font-size:20px;font-weight:700;cursor:pointer;box-shadow:0 4px 0 #7c3aed}
+.btn-back:active{transform:translateY(2px);box-shadow:0 2px 0 #7c3aed}
+
+/* ===== SCREEN 0: INTRO ===== */
+#s0{
+  background-image:url("shopbg.png");
+  background-size:100% 100%;
+  background-repeat:no-repeat;
+}
+.shop-sign{
+  position:absolute;
+
+  top:40px;
+
+  left:50%;
+
+  transform:translateX(-50%);
+
+  width:650px;
+
+  height:auto;
+
+  image-rendering:pixelated;
+
+  pointer-events:none;
+}
+.cafe-sign h1{font-size:48px;color:#831843;text-shadow:2px 2px 0 #fce7f3;letter-spacing:2px}
+.cafe-sign p{font-size:22px;color:#9d174d;margin-top:6px}
+.btn-start{
+  margin-bottom:-170px;
+  position:relative;
+
+  display:inline-block;
+
+  cursor:pointer;
+
+  border:2px solid #b18597;
+
+  outline:none;
+
+  background:#fff0f0;
+
+  color:#382b22;
+
+  font-family:'Kodchasan',sans-serif;
+
+  font-size:28px;
+
+  font-weight:700;
+
+  padding:20px 64px;
+
+  border-radius:18px;
+
+  transform-style:preserve-3d;
+
+  transition:
+    transform 150ms cubic-bezier(0,0,0.58,1),
+    background 150ms cubic-bezier(0,0,0.58,1);
+
+  animation:pulse 2s infinite;
+}
+
+.btn-start::before{
+  content:"";
+
+  position:absolute;
+
+  inset:0;
+
+  background:#f9c4d2;
+
+  border-radius:inherit;
+
+  box-shadow:
+    0 0 0 2px #b18597,
+    0 10px 0 0 #ffe3e2;
+
+  transform:translate3d(0,12px,-1em);
+
+  transition:
+    transform 150ms cubic-bezier(0,0,0.58,1),
+    box-shadow 150ms cubic-bezier(0,0,0.58,1);
+
+  z-index:-1;
+}
+
+.btn-start:hover{
+  background:#ffe9e9;
+
+  transform:translateY(4px);
+}
+
+.btn-start:hover::before{
+  transform:translate3d(0,8px,-1em);
+
+  box-shadow:
+    0 0 0 2px #b18597,
+    0 8px 0 0 #ffe3e2;
+}
+
+.btn-start:active{
+  background:#ffe9e9;
+
+  transform:translateY(12px);
+}
+
+.btn-start:active::before{
+  transform:translate3d(0,0,-1em);
+
+  box-shadow:
+    0 0 0 2px #b18597,
+    0 0 0 0 #ffe3e2;
+}
+@keyframes pulse{0%,100%{transform:scale(1)}50%{transform:scale(1.04)}}
+
+/* ===== SCREEN 1: LOADING ===== */
+#s1{background:#fdf2f8}
+.loading-box{background:#fff;border:4px solid #f9a8d4;border-radius:20px;padding:48px 64px;text-align:center;width:500px}
+.loading-box h2{font-size:32px;color:#be185d;margin-bottom:8px}
+.loading-box p{color:#9d174d;font-size:16px;margin-bottom:32px}
+.bar-track{width:100%;height:28px;background:#fce7f3;border-radius:14px;border:3px solid #f9a8d4;overflow:hidden}
+.bar-fill{height:100%;width:0%;background:linear-gradient(90deg,#f472b6,#fb7185);border-radius:14px;transition:width 0.08s linear}
+.loading-tip{margin-top:20px;font-size:14px;color:#db2777;min-height:20px}
+
+/* ===== SCREEN 2: PICK CAKE ===== */
+#s2{
+  background:#fdf4ff;
+  flex-direction:row;
+  align-items:stretch;
+  padding:24px;
+}
+.panel-left{
+  width:400px;
+  height:700px;
+  overflow-y:auto;
+  overflow-x:visible;
+  padding:8px;
+}
+
+#s2.screen.active,
+#s3.screen.active,
+#s4.screen.active{
+  height:800px;
+  overflow:hidden;
+}
+.panel-left h2{font-size:24px;color:#7e22ce;margin-bottom:16px;text-align:center}
+.cake-category{margin-bottom:20px}
+.cake-category h3{font-size:14px;color:#9333ea;text-transform:uppercase;letter-spacing:1px;margin-bottom:10px;padding-bottom:4px;border-bottom:2px solid #e9d5ff}
+.cake-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+.cake-option{background:#fff;border:3px solid #e9d5ff;border-radius:12px;padding:8px;cursor:pointer;text-align:center;transition:all .15s}
+.cake-option:hover{border-color:#a855f7;transform:scale(1.04)}
+.cake-option.selected{border-color:#7c3aed;background:#f3e8ff;box-shadow:0 0 0 2px #7c3aed}
+.cake-option .swatch{width:100%;height:56px;border-radius:8px;margin-bottom:4px;position:relative;overflow:hidden}
+.cake-option .label{font-size:11px;color:#6b21a8;font-weight:600}
+
+.panel-right{
+  flex:1;
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  min-width:0;
+  overflow:hidden;
+}
+.panel-right h2{font-size:20px;color:#7e22ce;margin-bottom:16px}
+#cake-preview-area,
+#cake-preview-area2,
+#cake-preview-area3{
+  position:relative;
+  width:700px;
+  height:700px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+}
+/* ===== SCREEN 3: PICK CREAM ===== */
+#s3{background:#fdf4ff;flex-direction:row;align-items:stretch;padding:24px}
+.cream-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:10px}
+.cream-option{background:#fff;border:3px solid #e9d5ff;border-radius:12px;padding:10px;cursor:pointer;text-align:center;transition:all .15s}
+.cream-option:hover{border-color:#a855f7;transform:scale(1.04)}
+.cream-option.selected{border-color:#7c3aed;background:#f3e8ff;box-shadow:0 0 0 2px #7c3aed}
+.cream-option .preview-mini{width:100%;height:70px;border-radius:8px;background:#f5f5f5;margin-bottom:6px;position:relative;overflow:hidden}
+.cream-option .label{font-size:12px;color:#6b21a8;font-weight:600}
+
+/* ===== SCREEN 4: DECORATION ===== */
+#s4{background:#fdf4ff;flex-direction:row;align-items:stretch;padding:24px}
+.deco-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:10px}
+.deco-option{background:#fff;border:3px solid #e9d5ff;border-radius:12px;padding:10px;cursor:pointer;text-align:center;transition:all .15s}
+.deco-option:hover{border-color:#a855f7;transform:scale(1.04)}
+.deco-option.selected{border-color:#f43f5e;background:#fff1f2;box-shadow:0 0 0 2px #f43f5e}
+.deco-option .preview-mini{width:100%;height:70px;border-radius:8px;background:#f5f5f5;margin-bottom:6px;position:relative;overflow:hidden}
+.deco-option .label{font-size:12px;color:#9f1239;font-weight:600}
+.selected-count{font-size:13px;color:#db2777;margin-top:6px;text-align:center}
+
+/* ===== SCREEN 5: SHOWCASE ===== */
+#s5{background:#fff0f8;flex-direction:row;align-items:stretch}
+.showcase-left{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:32px;position:relative}
+.showcase-left h2{font-size:22px;color:#be185d;margin-bottom:8px}
+.display-case{
+  width:500px;
+  height:550px;
+  background:#fce7f3;
+  border:6px solid #f9a8d4;
+  border-radius:20px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  position:relative;
+  overflow:hidden;
+}.case-shelf{position:absolute;bottom:60px;left:0;right:0;height:12px;background:#f9a8d4;border-radius:4px}
+.case-glass{position:absolute;inset:0;border-radius:14px;background:linear-gradient(135deg,rgba(255,255,255,.3) 0%,transparent 60%)}
+.mascot{position:absolute;bottom:12px;right:16px;font-size:48px}
+.shop-name{font-size:18px;font-weight:700;color:#be185d;margin-top:12px}
+
+.showcase-right{width:320px;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:32px;background:#fdf2f8;border-left:3px solid #fbcfe8}
+.qr-title{font-size:20px;color:#7e22ce;font-weight:700;margin-bottom:8px;text-align:center}
+.qr-subtitle{font-size:13px;color:#9d174d;text-align:center;margin-bottom:20px}
+#qrcode{background:#fff;padding:12px;border-radius:12px;border:3px solid #f9a8d4}
+.qr-instruction{font-size:13px;color:#be185d;text-align:center;margin-top:14px;line-height:1.6}
+.btn-restart{background:#10b981;color:#fff;border:none;border-radius:12px;padding:14px 28px;font-size:18px;font-weight:700;cursor:pointer;box-shadow:0 4px 0 #059669;margin-top:24px;width:100%}
+.btn-restart:active{transform:translateY(2px);box-shadow:0 2px 0 #059669}
+
+/* ===== CANVAS (cake drawing) ===== */
+canvas{image-rendering:pixelated;image-rendering:crisp-edges}
+
+/* step indicator */
+.step-indicator{position:absolute;top:16px;left:50%;transform:translateX(-50%);display:flex;gap:8px}
+.step-dot{width:12px;height:12px;border-radius:50%;background:#e9d5ff;transition:.2s}
+.step-dot.active{background:#7c3aed;transform:scale(1.3)}
+.step-dot.done{background:#a855f7}
+
+.screen-title{
+  position:absolute;
+  top:45px;
+  left:50%;
+  transform:translateX(-50%);
+  font-size:22px;
+  font-weight:700;
+  color:#7e22ce;
+  white-space:nowrap;
+  
+}
+.cafe-sign h1,
+.screen-title,
+.panel-left h2,
+.panel-right h2,
+.qr-title{
+  font-weight:700;
+}</style>
+</head>
+<body>
+<div id="game">
+
+<!-- SCREEN 0: INTRO -->
+<div class="screen active" id="s0">
+  <input id="playerName" placeholder="ใส่ชื่อของคุณ..." />
+  <img src="cafesign.png" class="shop-sign">
+<button class="btn-start" onclick="
+  playerName = document.getElementById('playerName').value || 'Guest';goTo(1)">▶ ทำเค้กเลย
+</button>
+<img src="cake.gif" id="cakeGif">
+</div>
+
+<!-- SCREEN 1: LOADING -->
+<div class="screen" id="s1">
+  <div class="loading-box">
+    <h2>กำลังเตรียมครัว...</h2>
+    <p>โปรดรอสักครู่นะคะ ✨</p>
+    <div class="bar-track"><div class="bar-fill" id="bar"></div></div>
+    <div class="loading-tip" id="loading-tip">กำลังอุ่นเตาอบ...</div>
+  </div>
+</div>
+
+<!-- SCREEN 2: PICK CAKE -->
+<div class="screen" id="s2">
+  <div class="screen-title">เลือกเค้ก</div>
+  <div class="step-indicator">
+    <div class="step-dot active" id="d1"></div>
+    <div class="step-dot" id="d2"></div>
+    <div class="step-dot" id="d3"></div>
+  </div>
+
+  <div class="panel-left" style="margin-top:48px">
+    <div class="cake-category">
+      <h3>เค้กเบสิก</h3>
+      <div class="cake-grid" id="grid-basic"></div>
+    </div>
+    <div class="cake-category">
+  <h3>เค้กดริป</h3>
+  <div class="cake-grid" id="grid-drip"></div>
+</div>
+    <div class="cake-category">
+      <h3>เค้กครีม</h3>
+      <div class="cake-grid" id="grid-cream-cake"></div>
+    </div>
+  </div>
+
+  <div class="panel-right" style="margin-top:48px">
+    <h2>ตัวอย่างเค้ก</h2>
+    <div id="cake-preview-area">
+      <canvas id="cake-canvas"
+  width="600"
+  height="600"
+  style="width:600px;height:600px">
+</canvas>
+    </div>
+  </div>
+
+  <button class="btn-next" onclick="if(state.cake)goTo(3);else alert('เลือกเค้กก่อนนะคะ!')">ต่อไป ▶</button>
+</div>
+
+<!-- SCREEN 3: PICK CREAM -->
+<div class="screen" id="s3">
+  <div class="screen-title">เลือกครีม</div>
+  <div class="step-indicator">
+    <div class="step-dot done"></div>
+    <div class="step-dot active"></div>
+    <div class="step-dot"></div>
+  </div>
+
+  <div class="panel-left" style="margin-top:48px">
+    <div class="cake-category">
+      <h3>รูปแบบครีม</h3>
+      <div class="cream-grid" id="grid-cream"></div>
+    </div>
+  </div>
+
+  <div class="panel-right" style="margin-top:48px">
+    <h2>ตัวอย่างเค้ก</h2>
+    <div id="cake-preview-area2">
+      <canvas id="cake-canvas2"
+  width="600"
+  height="600"
+  style="width:600px;height:600px">
+</canvas>
+    </div>
+  </div>
+
+  <button class="btn-back" onclick="goTo(2)">◀ ย้อนกลับ</button>
+  <button class="btn-next" onclick="if(state.cream!==null)goTo(4);else alert('เลือกครีมก่อนนะคะ!')">ต่อไป ▶</button>
+</div>
+
+<!-- SCREEN 4: DECORATION -->
+<div class="screen" id="s4">
+  <div class="screen-title">ตกแต่งเค้ก</div>
+  <div class="step-indicator">
+    <div class="step-dot done"></div>
+    <div class="step-dot done"></div>
+    <div class="step-dot active"></div>
+  </div>
+
+  <div class="panel-left" style="margin-top:48px">
+    <div class="cake-category">
+      <h3>ของตกแต่ง <span class="selected-count" id="deco-count">(เลือกได้ 2 แบบ)</span></h3>
+      <div class="deco-grid" id="grid-deco"></div>
+    </div>
+  </div>
+
+  <div class="panel-right" style="margin-top:48px">
+    <h2>ตัวอย่างเค้ก</h2>
+    <div id="cake-preview-area3">
+      <canvas id="cake-canvas3"
+  width="600"
+  height="600"
+  style="width:600px;height:600px">
+</canvas>
+    </div>
+  </div>
+
+  <button class="btn-back" onclick="goTo(3)">◀ ย้อนกลับ</button>
+  <button class="btn-next" onclick="goTo(5)">นำเค้กใส่ตู้ ▶</button>
+</div>
+
+<!-- SCREEN 5: SHOWCASE -->
+<div class="screen" id="s5">
+  <div class="showcase-left">
+    <h2>เค้กของคุณพร้อมแล้ว!</h2>
+    <div class="display-case" id="display-case">
+      <div class="case-shelf"></div>
+      <canvas id="cake-final" width="600" height="600" style="width:600px;height:600px;position:relative;z-index:1;margin-bottom:60px"></canvas>
+      <div class="case-glass"></div>
+      <div class="mascot">🐱</div>
+    </div>
+    <div class="shop-name">☕ Mocha Cafe</div>
+  </div>
+  <div class="showcase-right">
+    <div class="qr-title">สแกนรับภาพเค้กของคุณ!</div>
+    <div class="qr-subtitle">สแกน QR แล้วกดบันทึกภาพได้เลยค่ะ</div>
+    <div id="qrcode"></div>
+    <div class="qr-instruction">📱 สแกนด้วยกล้องมือถือ<br>แล้วกด "บันทึกรูปภาพ"</div>
+    <button class="btn-restart" onclick="restartGame()">🔄 เล่นใหม่</button>
+  </div>
+</div>
+
+</div><!-- #game -->
+
+<script>
+const CAKE_DATA = {
+  basic: [
+  {
+    id:'white',
+    label:'White',
+    image:'basecake_white.png'
+  },
+  {
+    id:'vanilla',
+    label:'Vanilla',
+    image:'basecake_vanilla.png'
+  },
+  {
+    id:'straw',
+    label:'Strawberry',
+    image:'basecake_straw.png'
+  },
+  {
+    id:'choco',
+    label:'Chocolate',
+    image:'basecake_choco.png'
+  }
+],
+  drip: [
+  {
+    id:'drip_whitechoc',
+    label:'White Choco',
+    image:'drip_whitechoc.png'
+  },
+  {
+    id:'drip_whitewhite',
+    label:'White Vanilla',
+    image:'drip_whitewhite.png'
+  },
+  {
+    id:'drip_whiteyellow',
+    label:'White Lemon',
+    image:'drip_whiteyellow.png'
+  },
+
+  {
+    id:'drip_whitepink',
+    label:'White Strawberry',
+    image:'drip_whitepink.png'
+  },
+
+  {
+    id:'drip_vanillachoco',
+    label:'Vanilla Choco',
+    image:'drip_vanillachoco.png'
+  },
+
+  {
+    id:'drip_vanillawhite',
+    label:'Vanilla White',
+    image:'drip_vanillawhite.png'
+  },
+
+  {
+    id:'drip_vanillayellow',
+    label:'Vanilla Lemon',
+    image:'drip_vanillayellow.png'
+  },
+
+  {
+    id:'drip_vanillapink',
+    label:'Vanilla Strawberry',
+    image:'drip_vanillapink.png'
+  },
+
+  {
+    id:'drip_chocochoco',
+    label:'Double Choco',
+    image:'drip_chocochoco.png'
+  },
+
+  {
+    id:'drip_chocowhite',
+    label:'Choco Vanilla',
+    image:'drip_chocowhite.png'
+  },
+
+  {
+    id:'drip_chocoyellow',
+    label:'Choco Lemon',
+    image:'drip_chocoyellow.png'
+  },
+
+  {
+    id:'drip_chocopink',
+    label:'Choco Strawberry',
+    image:'drip_chocopink.png'
+  },
+
+  {
+    id:'drip_pinkchoco',
+    label:'Strawberry Choco',
+    image:'drip_pinkchoco.png'
+  },
+
+  {
+    id:'drip_pinkwhite',
+    label:'Strawberry Vanilla',
+    image:'drip_pinkwhite.png'
+  },
+
+  {
+    id:'drip_pinkyellow',
+    label:'Strawberry Lemon',
+    image:'drip_pinkyellow.png'
+  },
+
+  {
+    id:'drip_pinkpink',
+    label:'Double Strawberry',
+    image:'drip_pinkpink.png'
+  }
+],
+  creamCake: [
+    {id:'cc_white', label:'ครีมขาว',        base:'#fde68a', side:'#fbbf24', top:'#fde68a', coat:'#fffbeb'},
+    {id:'cc_choc',  label:'ช็อคโกแลต',      base:'#92400e', side:'#78350f', top:'#92400e', coat:'#451a03'},
+    {id:'cc_straw', label:'สตรอเบอรี่',     base:'#fda4af', side:'#fb7185', top:'#fda4af', coat:'#f43f5e'},
+  ]
+};
+
+const CREAM_DATA = [
+  { id:'cream_choco',  label:'ครีมช็อกโกแลต', image:'cream_choco.png' },
+  { id:'cream_white',  label:'ครีมขาว',       image:'cream_white.png' },
+  { id:'cream_pink',   label:'ครีมชมพู',      image:'cream_pink.png' },
+  { id:'cream_yellow', label:'ครีมเหลือง',    image:'cream_yellow.png' },
+];
+
+const DECO_DATA = [
+  { id:'dc_cherry', label:'เชอร์รี่', image:'deco_cherry.png' },
+  { id:'dc_creamwhite', label:'ครีมขาว', image:'deco_creamwhite.png' },
+  { id:'dc_yellow', label:'ครีมเหลือง', image:'deco_yellow.png' },
+  { id:'dc_creamchoco', label:'ครีมช็อกโกแลต', image:'deco_creamchoco.png' },
+  { id:'dc_creampink', label:'ครีมชมพู', image:'deco_creampink.png' },
+];
+const creamImages = {};
+
+CREAM_DATA.forEach(c => {
+  const img = new Image();
+  img.src = c.image;
+  creamImages[c.id] = img;
+});
+CREAM_DATA.forEach(c => {
+  const img = new Image();
+  img.src = c.image;
+});
+const state = {cake: null, cream: null, decos: []};
+let playerName = "";
+
+function goTo(n) {
+  document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
+  document.getElementById('s'+n).classList.add('active');
+  if(n===1) startLoading();
+  if(n===2) renderCakeScreen();
+  if(n===3) renderCreamScreen();
+  if(n===4) renderDecoScreen();
+  if(n===5) renderShowcase();
+}
+
+/* ---- LOADING ---- */
+const tips = ['กำลังอุ่นเตาอบ...','ผสมแป้งเค้ก...','เตรียมครีมสด...','โรยน้ำตาลไอซิ่ง...','เค้กพร้อมแล้ว! 🎂'];
+function startLoading() {
+  let pct=0; let ti=0;
+  const bar=document.getElementById('bar');
+  const tip=document.getElementById('loading-tip');
+  tip.textContent=tips[0];
+  const iv=setInterval(()=>{
+    pct+=Math.random()*4+1;
+    if(pct>100)pct=100;
+    bar.style.width=pct+'%';
+    const tidx=Math.floor(pct/25);
+    if(tidx!==ti){ti=tidx;tip.textContent=tips[Math.min(ti,tips.length-1)];}
+    if(pct>=100){clearInterval(iv);setTimeout(()=>goTo(2),600);}
+  },60);
+}
+
+/* ---- CAKE DRAWING (canvas) ---- */
+function drawCake(canvas, cakeId, creamId, decos) {
+  const ctx = canvas.getContext('2d');
+  const W = canvas.width, H = canvas.height;
+
+  ctx.clearRect(0, 0, W, H);
+  if (!cakeId) return;
+
+  const all = [...CAKE_DATA.basic, ...CAKE_DATA.drip, ...CAKE_DATA.creamCake];
+  const ck = all.find(c => c.id === cakeId);
+  if (!ck) return;
+
+  
+
+  const drawCream = () => {
+  const img = creamImages[creamId];
+  if (!img) {
+    drawDecos(ctx, W, H, decos, () => {});
+    return;
+  }
+  if (img.complete) {
+    ctx.drawImage(img, 0, 0, W, H);
+    drawDecos(ctx, W, H, decos, () => {});
+  } else {
+    img.onload = () => {
+      ctx.drawImage(img, 0, 0, W, H);
+      drawDecos(ctx, W, H, decos, () => {});
+    };
+  }
+};
+
+  const drawCakeBase = () => {
+    if (!ck.image) {
+      drawCream();
+      return;
+    }
+
+    const img = new Image();
+    img.onload = () => {
+      ctx.clearRect(0, 0, W, H);
+
+      const size = 600;
+      ctx.drawImage(
+        img,
+        (W - size) / 2,
+        (H - size) / 2,
+        size,
+        size
+      );
+
+      drawCream();
+    };
+
+    img.src = ck.image;
+  };
+
+  drawCakeBase();
+}
+function drawDecos(ctx, W, H, decos, callback) {
+  if (!decos || !decos.length) { callback(); return; }
+  let loaded = 0;
+  decos.forEach(dId => {
+    const dc = DECO_DATA.find(d => d.id === dId);
+    if (!dc) { loaded++; if(loaded===decos.length) callback(); return; }
+    const img = new Image();
+    img.onload = () => {
+      ctx.drawImage(img, 0, 0, W, H);
+      loaded++;
+      if (loaded === decos.length) callback();
+    };
+    img.onerror = () => { loaded++; if(loaded===decos.length) callback(); };
+    img.src = dc.image;
+  });
+}
+
+function drawCherry(ctx,x,y){
+  ctx.fillStyle='#dc2626';ctx.beginPath();ctx.arc(x,y,9,0,Math.PI*2);ctx.fill();
+  ctx.strokeStyle='#16a34a';ctx.lineWidth=2;
+  ctx.beginPath();ctx.moveTo(x,y-9);ctx.quadraticCurveTo(x+10,y-22,x+14,y-18);ctx.stroke();
+}
+
+function drawHeart(ctx,x,y,s){
+  ctx.beginPath();
+  ctx.moveTo(x,y+s*0.4);
+  ctx.bezierCurveTo(x,y,x-s,y,x-s,y-s*0.5);
+  ctx.bezierCurveTo(x-s,y-s*1.1,x,y-s*1.1,x,y-s*0.5);
+  ctx.bezierCurveTo(x,y-s*1.1,x+s,y-s*1.1,x+s,y-s*0.5);
+  ctx.bezierCurveTo(x+s,y,x,y,x,y+s*0.4);
+  ctx.fill();
+}
+
+/* ---- RENDER SCREENS ---- */
+function renderCakeScreen(){
+  renderCakeGroup('grid-basic', CAKE_DATA.basic);
+  renderCakeGroup('grid-drip', CAKE_DATA.drip);
+  renderCakeGroup('grid-cream-cake', CAKE_DATA.creamCake);
+  refreshCakeCanvas('cake-canvas');
+}
+
+function renderCakeGroup(gridId, items){
+  const g=document.getElementById(gridId); if(!g)return;
+  g.innerHTML='';
+  items.forEach(ck=>{
+    const div=document.createElement('div');
+    div.className='cake-option'+(state.cake===ck.id?' selected':'');
+    div.innerHTML=`
+<div class="swatch">
+  <img src="${ck.image}"
+       style="width:100%;height:100%;object-fit:contain">
+</div>
+<div class="label">${ck.label}</div>
+`;
+    div.onclick=()=>{
+      state.cake=ck.id;
+      document.querySelectorAll('.cake-option').forEach(d=>d.classList.remove('selected'));
+      div.classList.add('selected');
+      refreshCakeCanvas('cake-canvas');
+    };
+    g.appendChild(div);
+  });
+}
+
+function refreshCakeCanvas(id){
+  const c=document.getElementById(id);if(!c)return;
+  drawCake(c,state.cake,state.cream,state.decos);
+  console.log(state.decos);
+}
+
+function renderCreamScreen(){
+  const g=document.getElementById('grid-cream');g.innerHTML='';
+  CREAM_DATA.forEach(cr=>{
+    const div=document.createElement('div');
+    div.className='cream-option'+(state.cream===cr.id?' selected':'');
+
+    const pm=document.createElement('div');
+    pm.className='preview-mini';
+    const img=document.createElement('img');
+    img.src=cr.image;
+    img.style.width='100%';
+    img.style.height='100%';
+    img.style.objectFit='contain';
+    pm.appendChild(img);
+    div.appendChild(pm);  // ✅ append pm เข้า div
+
+    const lbl=document.createElement('div');
+    lbl.className='label';
+    lbl.textContent=cr.label;
+    div.appendChild(lbl);
+
+    div.onclick=()=>{
+      state.cream=cr.id;
+      document.querySelectorAll('.cream-option').forEach(d=>d.classList.remove('selected'));
+      div.classList.add('selected');
+      refreshCakeCanvas('cake-canvas2');
+    };
+    g.appendChild(div);
+  });
+  refreshCakeCanvas('cake-canvas2');
+}
+
+function renderDecoScreen(){
+  const g=document.getElementById('grid-deco');g.innerHTML='';
+  DECO_DATA.forEach(dc=>{
+    const div=document.createElement('div');
+    const sel=state.decos.includes(dc.id);
+    div.className='deco-option'+(sel?' selected':'');
+
+    const pm=document.createElement('div');
+    pm.className='preview-mini';
+    const img=document.createElement('img');
+    img.src=dc.image;
+    img.style.width='100%';
+    img.style.height='100%';
+    img.style.objectFit='contain';
+    pm.appendChild(img);
+    div.appendChild(pm);
+
+    const lbl=document.createElement('div');
+    lbl.className='label';
+    lbl.textContent=dc.label;
+    div.appendChild(lbl);
+
+    div.onclick=()=>{
+      const idx=state.decos.indexOf(dc.id);
+      if(idx>-1){
+        state.decos.splice(idx,1);
+        div.classList.remove('selected');
+      } else if(state.decos.length<2){
+        state.decos.push(dc.id);
+        div.classList.add('selected');
+      } else {
+        alert('เลือกได้แค่ 2 แบบนะคะ!');
+      }
+      document.getElementById('deco-count').textContent=`(เลือกแล้ว ${state.decos.length}/2)`;
+      refreshCakeCanvas('cake-canvas3');  // ✅ เพิ่มพรีวิว
+    };
+    g.appendChild(div);
+  });
+  document.getElementById('deco-count').textContent=`(เลือกแล้ว ${state.decos.length}/2)`;
+  refreshCakeCanvas('cake-canvas3');  // ✅ วาดตอนเข้าหน้า
+}
+
+function decoEmoji(id){
+  const m={dc_cherry1:'🍒',dc_cherry3:'🍒',dc_rainbow:'🌈',dc_chocheart:'♥',dc_fruit:'🍓',dc_star:'⭐'};
+  return m[id]||'✨';
+}
+async function uploadCakeToCloudinary(dataUrl){
+
+  const blob = await (await fetch(dataUrl)).blob();
+
+  const formData = new FormData();
+  formData.append("file", blob);
+  formData.append("upload_preset", "cake_upload");
+
+  const response = await fetch(
+    "https://api.cloudinary.com/v1_1/dfst3zmv7/image/upload",
+    {
+      method: "POST",
+      body: formData
+    }
+  );
+
+  if(!response.ok){
+    throw new Error("Upload failed");
+  }
+
+  const result = await response.json();
+
+  return result.secure_url;
+}
+/* ---- SHOWCASE ---- */
+async function renderShowcase(){
+  const fc=document.getElementById('cake-final');
+  drawCake(fc,state.cake,state.cream,state.decos);
+
+  // Generate data URL of cake image
+  const bigCanvas=document.createElement('canvas');
+  bigCanvas.width=600;bigCanvas.height=600;
+  const bctx=bigCanvas.getContext('2d');
+  bctx.fillStyle='#fdf2f8';bctx.fillRect(0,0,600,600);
+  // draw display case bg
+  bctx.fillStyle='#fce7f3';bctx.roundRect(40,20,520,520,16);
+  bctx.strokeStyle='#f9a8d4';bctx.lineWidth=4;bctx.stroke();
+  // draw cake centered
+  const tmp=document.createElement('canvas');tmp.width=600;tmp.height=600;
+  drawCake(tmp,state.cake,state.cream,state.decos);
+
+await new Promise(r => setTimeout(r,500));
+
+bctx.drawImage(tmp,0,0,600,600);
+  // label
+  bctx.fillStyle='#be185d';bctx.font='bold 22px sans-serif';bctx.textAlign='center';
+  console.log(playerName);
+  bctx.fillText(`เค้กทำโดย "${playerName}"`,200,320);
+  bctx.fillText('ขอบคุณที่แวะมานะคะ',200,350);
+  bctx.fillText('☕ Mocha Cafe',200,380);
+  bctx.fillStyle='#9d174d';bctx.font='14px sans-serif';
+  bctx.fillText('เค้กของฉัน — Let\'s Make Cake!',200,394);
+const dataUrl = bigCanvas.toDataURL('image/png');
+
+const qrDiv = document.getElementById('qrcode');
+
+qrDiv.innerHTML = `
+<div style="
+font-size:14px;
+color:#be185d;
+text-align:center;
+padding:20px;">
+☁️ กำลังอัปโหลดเค้ก...
+</div>
+`;
+
+try{
+
+  const imageUrl = await uploadCakeToCloudinary(dataUrl);
+
+  qrDiv.innerHTML = "";
+
+  new QRCode(qrDiv,{
+    text:imageUrl,
+    width:180,
+    height:180,
+    correctLevel:QRCode.CorrectLevel.L
+  });
+
+  const downloadBtn = document.createElement("button");
+
+  downloadBtn.innerHTML = "📥 เปิดรูปเค้ก";
+
+  downloadBtn.style.marginTop = "12px";
+  downloadBtn.style.padding = "10px 16px";
+  downloadBtn.style.border = "none";
+  downloadBtn.style.borderRadius = "10px";
+  downloadBtn.style.cursor = "pointer";
+
+  downloadBtn.onclick = () => {
+    window.open(imageUrl,"_blank");
+  };
+
+  qrDiv.appendChild(downloadBtn);
+
+}catch(err){
+
+  console.error(err);
+
+  qrDiv.innerHTML = `
+  <div style="
+  color:red;
+  font-size:14px;
+  text-align:center;">
+  ❌ อัปโหลดไม่สำเร็จ
+  </div>
+  `;
+}
+}
+
+function restartGame(){
+  state.cake=null;state.cream=null;state.decos=[];
+  document.getElementById('bar').style.width='0%';
+  goTo(0);
+}
+function resizeGame(){
+
+  const game = document.getElementById("game");
+
+  const baseWidth = 1280;
+  const baseHeight = 800;
+
+  const scale = Math.min(
+    window.innerWidth / baseWidth,
+    window.innerHeight / baseHeight
+  );
+
+  game.style.transform =
+    `translate(-50%, -50%) scale(${scale})`;
+}
+
+window.addEventListener("resize", resizeGame);
+
+resizeGame();
+</script>
+</body>
+</html>
