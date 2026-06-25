@@ -72,7 +72,7 @@ px;background:#c4b5fd;color:#4c1d95;border:none;border-radius:12px;padding:14px 
 
 /* ===== SCREEN 0: INTRO ===== */
 #s0{
-  background-image:url("shopbg.png");
+  background-image:url("../Assets/shopbg.png");
   background-size:100% 100%;
   background-repeat:no-repeat;
 }
@@ -323,11 +323,11 @@ canvas{image-rendering:pixelated;image-rendering:crisp-edges}
 <!-- SCREEN 0: INTRO -->
 <div class="screen active" id="s0">
   <input id="playerName" placeholder="ใส่ชื่อของคุณ..." />
-  <img src="cafesign.png" class="shop-sign">
+  <img src="../Assets/cafesign.png" class="shop-sign">
 <button class="btn-start" onclick="
   playerName = document.getElementById('playerName').value || 'Guest';goTo(1)">▶ ทำเค้กเลย
 </button>
-<img src="cake.gif" id="cakeGif">
+<img src="../Assets/cake.gif" id="cakeGif">
 </div>
 
 <!-- SCREEN 1: LOADING -->
@@ -464,122 +464,123 @@ canvas{image-rendering:pixelated;image-rendering:crisp-edges}
 </div><!-- #game -->
 
 <script>
+const ASSET_PATH = "../Assets/";
 const CAKE_DATA = {
   basic: [
   {
     id:'white',
     label:'White',
-    image:'basecake_white.png'
+    image: ASSET_PATH + 'basecake_white.png'
   },
   {
     id:'vanilla',
     label:'Vanilla',
-    image:'basecake_vanilla.png'
+    image: ASSET_PATH + 'basecake_vanilla.png'
   },
   {
     id:'straw',
     label:'Strawberry',
-    image:'basecake_straw.png'
+    image: ASSET_PATH + 'basecake_straw.png'
   },
   {
     id:'choco',
     label:'Chocolate',
-    image:'basecake_choco.png'
+    image: ASSET_PATH + 'basecake_choco.png'
   }
 ],
   drip: [
   {
     id:'drip_whitechoc',
     label:'White Choco',
-    image:'drip_whitechoc.png'
+    image: ASSET_PATH + 'drip_whitechoc.png'
   },
   {
     id:'drip_whitewhite',
     label:'White Vanilla',
-    image:'drip_whitewhite.png'
+    image: ASSET_PATH + 'drip_whitewhite.png'
   },
   {
     id:'drip_whiteyellow',
     label:'White Lemon',
-    image:'drip_whiteyellow.png'
+    image: ASSET_PATH + 'drip_whiteyellow.png'
   },
 
   {
     id:'drip_whitepink',
     label:'White Strawberry',
-    image:'drip_whitepink.png'
+    image: ASSET_PATH + 'drip_whitepink.png'
   },
 
   {
     id:'drip_vanillachoco',
     label:'Vanilla Choco',
-    image:'drip_vanillachoco.png'
+    image: ASSET_PATH + 'drip_vanillachoco.png'
   },
 
   {
     id:'drip_vanillawhite',
     label:'Vanilla White',
-    image:'drip_vanillawhite.png'
+    image: ASSET_PATH + 'drip_vanillawhite.png'
   },
 
   {
     id:'drip_vanillayellow',
     label:'Vanilla Lemon',
-    image:'drip_vanillayellow.png'
+    image: ASSET_PATH + 'drip_vanillayellow.png'
   },
 
   {
     id:'drip_vanillapink',
     label:'Vanilla Strawberry',
-    image:'drip_vanillapink.png'
+    image: ASSET_PATH + 'drip_vanillapink.png'
   },
 
   {
     id:'drip_chocochoco',
     label:'Double Choco',
-    image:'drip_chocochoco.png'
+    image: ASSET_PATH + 'drip_chocochoco.png'
   },
 
   {
     id:'drip_chocowhite',
     label:'Choco Vanilla',
-    image:'drip_chocowhite.png'
+    image: ASSET_PATH + 'drip_chocowhite.png'
   },
 
   {
     id:'drip_chocoyellow',
     label:'Choco Lemon',
-    image:'drip_chocoyellow.png'
+    image: ASSET_PATH + 'drip_chocoyellow.png'
   },
 
   {
     id:'drip_chocopink',
     label:'Choco Strawberry',
-    image:'drip_chocopink.png'
+    image: ASSET_PATH + 'drip_chocopink.png'
   },
 
   {
     id:'drip_pinkchoco',
     label:'Strawberry Choco',
-    image:'drip_pinkchoco.png'
+    image: ASSET_PATH + 'drip_pinkchoco.png'
   },
 
   {
     id:'drip_pinkwhite',
     label:'Strawberry Vanilla',
-    image:'drip_pinkwhite.png'
+    image: ASSET_PATH + 'drip_pinkwhite.png'
   },
 
   {
     id:'drip_pinkyellow',
     label:'Strawberry Lemon',
-    image:'drip_pinkyellow.png'
+    image: ASSET_PATH + 'drip_pinkyellow.png'
   },
 
   {
     id:'drip_pinkpink',
     label:'Double Strawberry',
-    image:'drip_pinkpink.png'
+    image: ASSET_PATH + 'drip_pinkpink.png'
   }
 ],
   creamCake: [
@@ -590,18 +591,18 @@ const CAKE_DATA = {
 };
 
 const CREAM_DATA = [
-  { id:'cream_choco',  label:'ครีมช็อกโกแลต', image:'cream_choco.png' },
-  { id:'cream_white',  label:'ครีมขาว',       image:'cream_white.png' },
-  { id:'cream_pink',   label:'ครีมชมพู',      image:'cream_pink.png' },
-  { id:'cream_yellow', label:'ครีมเหลือง',    image:'cream_yellow.png' },
+  { id:'cream_choco',  label:'ครีมช็อกโกแลต', image: ASSET_PATH + 'cream_choco.png' },
+  { id:'cream_white',  label:'ครีมขาว',       image: ASSET_PATH + 'cream_white.png' },
+  { id:'cream_pink',   label:'ครีมชมพู',      image: ASSET_PATH + 'cream_pink.png' },
+  { id:'cream_yellow', label:'ครีมเหลือง',    image: ASSET_PATH + 'cream_yellow.png' },
 ];
 
 const DECO_DATA = [
-  { id:'dc_cherry', label:'เชอร์รี่', image:'deco_cherry.png' },
-  { id:'dc_creamwhite', label:'ครีมขาว', image:'deco_creamwhite.png' },
-  { id:'dc_yellow', label:'ครีมเหลือง', image:'deco_yellow.png' },
-  { id:'dc_creamchoco', label:'ครีมช็อกโกแลต', image:'deco_creamchoco.png' },
-  { id:'dc_creampink', label:'ครีมชมพู', image:'deco_creampink.png' },
+  { id:'dc_cherry', label:'เชอร์รี่', image: ASSET_PATH + 'deco_cherry.png' },
+  { id:'dc_creamwhite', label:'ครีมขาว', image: ASSET_PATH + 'deco_creamwhite.png' },
+  { id:'dc_yellow', label:'ครีมเหลือง', image: ASSET_PATH + 'deco_yellow.png' },
+  { id:'dc_creamchoco', label:'ครีมช็อกโกแลต', image: ASSET_PATH + 'deco_creamchoco.png' },
+  { id:'dc_creampink', label:'ครีมชมพู', image: ASSET_PATH + 'deco_creampink.png' },
 ];
 const creamImages = {};
 
