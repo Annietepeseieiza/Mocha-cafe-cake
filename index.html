@@ -583,11 +583,6 @@ const CAKE_DATA = {
     image: ASSET_PATH + 'drip_pinkpink.png'
   }
 ],
-  creamCake: [
-    {id:'cc_white', label:'ครีมขาว',        base:'#fde68a', side:'#fbbf24', top:'#fde68a', coat:'#fffbeb'},
-    {id:'cc_choc',  label:'ช็อคโกแลต',      base:'#92400e', side:'#78350f', top:'#92400e', coat:'#451a03'},
-    {id:'cc_straw', label:'สตรอเบอรี่',     base:'#fda4af', side:'#fb7185', top:'#fda4af', coat:'#f43f5e'},
-  ]
 };
 
 const CREAM_DATA = [
@@ -647,76 +642,91 @@ function startLoading() {
 
 /* ---- CAKE DRAWING (canvas) ---- */
 function drawCake(canvas, cakeId, creamId, decos) {
-  const ctx = canvas.getContext('2d');
-  const W = canvas.width, H = canvas.height;
+  return new Promise(resolve => {
 
-  ctx.clearRect(0, 0, W, H);
-  if (!cakeId) return;
+    const ctx = canvas.getContext('2d');
+    const W = canvas.width;
+    const H = canvas.height;
 
-  const all = [...CAKE_DATA.basic, ...CAKE_DATA.drip, ...CAKE_DATA.creamCake];
-  const ck = all.find(c => c.id === cakeId);
-  if (!ck) return;
+    ctx.clearRect(0, 0, W, H);
 
-  
-
-  const drawCream = () => {
-  const img = creamImages[creamId];
-  if (!img) {
-    drawDecos(ctx, W, H, decos, () => {});
-    return;
-  }
-  if (img.complete) {
-    ctx.drawImage(img, 0, 0, W, H);
-    drawDecos(ctx, W, H, decos, () => {});
-  } else {
-    img.onload = () => {
-      ctx.drawImage(img, 0, 0, W, H);
-      drawDecos(ctx, W, H, decos, () => {});
-    };
-  }
-};
-
-  const drawCakeBase = () => {
-    if (!ck.image) {
-      drawCream();
+    if (!cakeId) {
+      resolve();
       return;
     }
 
-    const img = new Image();
-    img.onload = () => {
-      ctx.clearRect(0, 0, W, H);
+    const all = [...CAKE_DATA.basic, ...CAKE_DATA.drip, ...CAKE_DATA.creamCake];
+    const ck = all.find(c => c.id === cakeId);
 
-      const size = 600;
-      ctx.drawImage(
-        img,
-        (W - size) / 2,
-        (H - size) / 2,
-        size,
-        size
-      );
+    if (!ck) {
+      resolve();
+      return;
+    }
 
-      drawCream();
-    };
+    function finish() {
+      drawDecos(ctx, W, H, decos, resolve);
+    }
 
-    img.src = ck.image;
-  };
+    function drawCream() {
+      if (!creamId) {
+        finish();
+        return;
+      }
 
-  drawCakeBase();
-}
-function drawDecos(ctx, W, H, decos, callback) {
-  if (!decos || !decos.length) { callback(); return; }
-  let loaded = 0;
-  decos.forEach(dId => {
-    const dc = DECO_DATA.find(d => d.id === dId);
-    if (!dc) { loaded++; if(loaded===decos.length) callback(); return; }
-    const img = new Image();
-    img.onload = () => {
-      ctx.drawImage(img, 0, 0, W, H);
-      loaded++;
-      if (loaded === decos.length) callback();
-    };
-    img.onerror = () => { loaded++; if(loaded===decos.length) callback(); };
-    img.src = dc.image;
+      const img = creamImages[creamId];
+
+      if (!img) {
+        finish();
+        return;
+      }
+
+      if (img.complete) {
+        ctx.drawImage(img, 0, 0, W, H);
+        finish();
+      } else {
+        img.onload = () => {
+          ctx.drawImage(img, 0, 0, W, H);
+          finish();
+        };
+
+        img.onerror = finish;
+      }
+    }
+
+    function drawCakeBase() {
+
+      // กรณีไม่มีไฟล์รูป (เช่น creamCake เดิม)
+      if (!ck.image) {
+        drawCream();
+        return;
+      }
+
+      const img = new Image();
+
+      img.onload = () => {
+
+        ctx.clearRect(0, 0, W, H);
+
+        const size = 600;
+
+        ctx.drawImage(
+          img,
+          (W - size) / 2,
+          (H - size) / 2,
+          size,
+          size
+        );
+
+        drawCream();
+      };
+
+      img.onerror = drawCream;
+
+      img.src = ck.image;
+    }
+
+    drawCakeBase();
+
   });
 }
 
@@ -878,7 +888,7 @@ async function uploadCakeToCloudinary(dataUrl){
 /* ---- SHOWCASE ---- */
 async function renderShowcase(){
   const fc=document.getElementById('cake-final');
-  drawCake(fc,state.cake,state.cream,state.decos);
+  await drawCake(fc,state.cake,state.cream,state.decos);
 
   // Generate data URL of cake image
   const bigCanvas=document.createElement('canvas');
@@ -890,11 +900,8 @@ async function renderShowcase(){
   bctx.strokeStyle='#f9a8d4';bctx.lineWidth=4;bctx.stroke();
   // draw cake centered
   const tmp=document.createElement('canvas');tmp.width=600;tmp.height=600;
-  drawCake(tmp,state.cake,state.cream,state.decos);
-
-await new Promise(r => setTimeout(r,500));
-
-bctx.drawImage(tmp,0,0,600,600);
+  await drawCake(tmp,state.cake,state.cream,state.decos);
+  bctx.drawImage(tmp,0,0,600,600);
   // label
   bctx.fillStyle='#be185d';bctx.font='bold 22px sans-serif';bctx.textAlign='center';
   console.log(playerName);
