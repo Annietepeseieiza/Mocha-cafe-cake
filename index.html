@@ -350,30 +350,29 @@ canvas{image-rendering:pixelated;image-rendering:crisp-edges}
   </div>
 
   <div class="panel-left" style="margin-top:48px">
-    <div class="cake-category">
-      <h3>เค้กเบสิก</h3>
-      <div class="cake-grid" id="grid-basic"></div>
-    </div>
-    <div class="cake-category">
-  <h3>เค้กดริป</h3>
-  <div class="cake-grid" id="grid-drip"></div>
-</div>
-    <div class="cake-category">
-      <h3>เค้กครีม</h3>
-      <div class="cake-grid" id="grid-cream-cake"></div>
-    </div>
+  <div class="cake-category">
+    <h3>เค้กเบสิก</h3>
+    <div class="cake-grid" id="grid-basic"></div>
   </div>
 
-  <div class="panel-right" style="margin-top:48px">
-    <h2>ตัวอย่างเค้ก</h2>
-    <div id="cake-preview-area">
-      <canvas id="cake-canvas"
-  width="600"
-  height="600"
-  style="width:600px;height:600px">
-</canvas>
-    </div>
+  <div class="cake-category">
+    <h3>เค้กดริป</h3>
+    <div class="cake-grid" id="grid-drip"></div>
   </div>
+</div> <!-- ปิด panel-left ตรงนี้ -->
+
+<div class="panel-right" style="margin-top:48px">
+  <h2>ตัวอย่างเค้ก</h2>
+
+  <div id="cake-preview-area">
+    <canvas
+      id="cake-canvas"
+      width="600"
+      height="600"
+      style="width:600px;height:600px">
+    </canvas>
+  </div>
+</div>
 
   <button class="btn-next" onclick="if(state.cake)goTo(3);else alert('เลือกเค้กก่อนนะคะ!')">ต่อไป ▶</button>
 </div>
@@ -655,7 +654,10 @@ function drawCake(canvas, cakeId, creamId, decos) {
       return;
     }
 
-    const all = [...CAKE_DATA.basic, ...CAKE_DATA.drip, ...CAKE_DATA.creamCake];
+    const all = [
+  ...CAKE_DATA.basic,
+  ...CAKE_DATA.drip
+];
     const ck = all.find(c => c.id === cakeId);
 
     if (!ck) {
@@ -729,28 +731,27 @@ function drawCake(canvas, cakeId, creamId, decos) {
 
   });
 }
-
-function drawCherry(ctx,x,y){
-  ctx.fillStyle='#dc2626';ctx.beginPath();ctx.arc(x,y,9,0,Math.PI*2);ctx.fill();
-  ctx.strokeStyle='#16a34a';ctx.lineWidth=2;
-  ctx.beginPath();ctx.moveTo(x,y-9);ctx.quadraticCurveTo(x+10,y-22,x+14,y-18);ctx.stroke();
+function drawDecos(ctx, W, H, decos, callback) {
+  if (!decos || !decos.length) { callback(); return; }
+  let loaded = 0;
+  decos.forEach(dId => {
+    const dc = DECO_DATA.find(d => d.id === dId);
+    if (!dc) { loaded++; if(loaded===decos.length) callback(); return; }
+    const img = new Image();
+    img.onload = () => {
+      ctx.drawImage(img, 0, 0, W, H);
+      loaded++;
+      if (loaded === decos.length) callback();
+    };
+    img.onerror = () => { loaded++; if(loaded===decos.length) callback(); };
+    img.src = dc.image;
+  });
 }
-
-function drawHeart(ctx,x,y,s){
-  ctx.beginPath();
-  ctx.moveTo(x,y+s*0.4);
-  ctx.bezierCurveTo(x,y,x-s,y,x-s,y-s*0.5);
-  ctx.bezierCurveTo(x-s,y-s*1.1,x,y-s*1.1,x,y-s*0.5);
-  ctx.bezierCurveTo(x,y-s*1.1,x+s,y-s*1.1,x+s,y-s*0.5);
-  ctx.bezierCurveTo(x+s,y,x,y,x,y+s*0.4);
-  ctx.fill();
-}
-
 /* ---- RENDER SCREENS ---- */
 function renderCakeScreen(){
   renderCakeGroup('grid-basic', CAKE_DATA.basic);
   renderCakeGroup('grid-drip', CAKE_DATA.drip);
-  renderCakeGroup('grid-cream-cake', CAKE_DATA.creamCake);
+
   refreshCakeCanvas('cake-canvas');
 }
 
